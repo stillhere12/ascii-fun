@@ -71,3 +71,32 @@ async function getPixels(image) {
   }
 }
 getPixels('./ben.jpg');
+
+async function ImageInspector(iamge: string) {
+  const instance = sharp(iamge);
+  const metadata = await instance.metadata();
+  console.log(`Width: ${metadata.width}, Height: ${metadata.height}`);
+  console.log(`Format: ${metadata.format}`);
+  console.log(`Channels: ${metadata.channels}`);
+  console.log(`Format type: ${metadata.channels === 3 ? 'RGB' : 'RGBA'}`);
+  const { data } = await instance.raw().toBuffer({ resolveWithObject: true });
+  const pixelArray = new Uint8Array(data.buffer);
+  const channels = metadata.channels;
+  for (let i = 0; i < pixelArray.length; i += channels) {
+    if (channels === 3) {
+      const r = pixelArray[i];
+      const g = pixelArray[i + 1];
+      const b = pixelArray[i + 2];
+
+      // Create colored block using ANSI escape codes
+      const colorBlock = `\x1b[48;2;${r};${g};${b}m     \x1b[0m`;
+      // took help from claude alot here.
+      console.log(`${colorBlock} Pixel ${i + 1} : RGB(${r}, ${g}, ${b})`);
+    } else if (channels === 4) {
+      console.log(`pixelArray[i], pixelArray[i + 1], pixelArray[i + 2], pixelArray[i + 3]`);
+    }
+    console.log('\n');
+  }
+}
+
+ImageInspector('./ben.jpg');
