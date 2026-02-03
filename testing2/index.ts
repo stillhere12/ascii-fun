@@ -49,14 +49,23 @@ console.log(`checking if sharp is promise: ${isPromise(sharp('./ben.jpg'))}`);
 async function getPixels(image) {
   try {
     const metaData = await sharp(image).metadata();
-    if (metaData.channels === 3) {
-      console.log(`It is rgb.`);
-    } else if (metaData.channels === 4) {
-      console.log(`It is rgba.`);
-    }
     const { data, info } = await sharp(image).raw().toBuffer({ resolveWithObject: true });
     const pixelArray = new Uint8Array(data.buffer);
-    console.log(pixelArray);
+    if (metaData.channels === 3) {
+      console.log(`It is rgb.`);
+      // getting the first 5 pixels
+      for (let i = 0; i < 15; i += 3) {
+        console.log(`R: ${pixelArray[i]}, G: ${pixelArray[i + 1]}, B: ${pixelArray[i + 2]}`);
+      }
+    } else if (metaData.channels === 4) {
+      console.log(`It is rgba.`);
+      // getting the first 5 pixels
+      for (let i = 0; i < 20; i += 4) {
+        console.log(
+          `R: ${pixelArray[i]}, G: ${pixelArray[i + 1]}, B: ${pixelArray[i + 2]}, A: ${pixelArray[i + 3]}`
+        );
+      }
+    }
   } catch (error) {
     console.log(error);
   }
