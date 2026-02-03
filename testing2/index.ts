@@ -6,7 +6,7 @@
 // Extract and display the RGB values of the first 5 pixels
 
 const sharp = require('sharp');
-
+import { grayScaleConverter } from '../grayScaler/index.js';
 const image = sharp('./ben.jpg');
 console.log(typeof image); // checking what it returns
 
@@ -72,7 +72,7 @@ async function getPixels(image) {
 }
 getPixels('./ben.jpg');
 
-async function ImageInspector(iamge: string) {
+async function ImageInspectorReal(iamge: string) {
   const instance = sharp(iamge);
   const metadata = await instance.metadata();
   console.log(`Width: ${metadata.width}, Height: ${metadata.height}`);
@@ -99,4 +99,35 @@ async function ImageInspector(iamge: string) {
   }
 }
 
-ImageInspector('./ben.jpg');
+async function ImageInspectorGrayScale(image: string) {
+  const instance = sharp(image);
+  const metadata = await instance.metadata();
+  console.log(`Width: ${metadata.width}, Height: ${metadata.height}`);
+  console.log(`Format: ${metadata.format}`);
+  console.log(`Channels: ${metadata.channels}`);
+  console.log(`Format type: ${metadata.channels === 3 ? 'RGB' : 'RGBA'}`);
+  const { data } = await instance.raw().toBuffer({ resolveWithObject: true });
+  const pixelArray = new Uint8Array(data.buffer);
+  if (!pixelArray) {
+    throw new Error('Pixel array is empty');
+  }
+  const channels = metadata.channels;
+  for (let i = 0; i < pixelArray.length; i += channels) {
+    if (channels === 3) {
+      // it tells typescript that it is a number and not undefined
+      let r = pixelArray[i]!;
+      let g = pixelArray[i + 1]!;
+      let b = pixelArray[i + 2]!;
+
+      const grayScale = grayScaleConverter(r, g, b);
+      r = g = b = grayScale;
+      // Create colored block using ANSI escape codes
+      const colorBlock = `\x1b[48;2;${r};${g};${b}m     \x1b[0m`;
+      console.log(`${colorBlock} Pixel ${i + 1} : RGB(${r}, ${g}, ${b})`);
+    } else if (channels === 4) {
+      console.log(`pixelArray[i], pixelArray[i + 1], pixelArray[i + 2], pixelArray[i + 3]`);
+    }
+    console.log('\n');
+  }
+}
+ImageInspectorGrayScale('./ben.jpg');
