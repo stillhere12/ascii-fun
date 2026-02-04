@@ -8,8 +8,8 @@ export function pixelBufferToBrightness(buffer: Uint8Array, channels: number) {
       const r = buffer[i]!;
       const g = buffer[i + 1]!;
       const b = buffer[i + 2]!;
-      const brightness = calculateBrightness(r, g, b);
-      result.push(brightness);
+      const colorBlock = calculateBrightness(r, g, b);
+      result.push(colorBlock);
     } else if (channels === 4) {
       const r = buffer[i]!;
       const g = buffer[i + 1]!;
@@ -18,8 +18,8 @@ export function pixelBufferToBrightness(buffer: Uint8Array, channels: number) {
       const rA = r * a + 255 * (1 - a);
       const gA = g * a + 255 * (1 - a);
       const bA = b * a + 255 * (1 - a);
-      const brightness = calculateBrightness(rA, gA, bA);
-      result.push(brightness);
+      const colorBlock = calculateBrightness(rA, gA, bA);
+      result.push(colorBlock);
     }
   }
   return result;

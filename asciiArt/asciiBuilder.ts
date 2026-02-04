@@ -21,16 +21,18 @@ export async function buildAsciiArt(imagePath: string, outputPath: string, contr
     outputPath
   );
 
-  const brightnessArray: number[] = pixelBufferToBrightness(pixelArray, channels);
+  const colorArrayinRGB: number[] = pixelBufferToBrightness(pixelArray, channels);
   const result: string[][] = brightnessToCharacter(
-    brightnessArray,
+    colorArrayinRGB,
+    pixelArray,
+    channels,
     requiredWidth,
     requiredHeight,
-    contrast // Pass the new contrast parameter from gemini ai agent
+    contrast
   );
   let asciiString = '';
   for (let i = 0; i < result.length; i++) {
-    asciiString += result[i]!.join('') + '\n';
+    asciiString += result[i]!.join('') + '\x1b[0m\n';
   }
   writeFileSync(outputPath, asciiString);
   return asciiString;

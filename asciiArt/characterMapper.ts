@@ -1,5 +1,7 @@
 export function brightnessToCharacter(
   brightness: number[],
+  pixelArray: Uint8Array,
+  channels: number,
   width: number,
   height: number,
   contrast: number
@@ -9,14 +11,20 @@ export function brightnessToCharacter(
     '$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`\'.            ';
   // Trim based on contrast (-10 to 10), mirrors Python: density[:-11+contrast]
   const palette = DENSITY.slice(0, DENSITY.length + contrast - 11);
-  // splice original array is affected in slice orginal array remains as it is and returns new array
   const n = palette.length;
   let result: string[][] = [];
   for (let i = 0; i < height; i++) {
     let inner: string[] = [];
     for (let j = 0; j < width; j++) {
-      let k = Math.floor((brightness[i * width + j]! / 256) * n);
-      inner.push(palette[n - 1 - k]!);
+      const pixelIndex = i * width + j;
+      let k = Math.floor((brightness[pixelIndex]! / 256) * n);
+      const char = palette[n - 1 - k]!;
+      // ANSI 24-bit foreground color: \x1b[38;2;R;G;Bm
+      const bufIdx = pixelIndex * channels;
+      const r = pixelArray[bufIdx]!;
+      const g = pixelArray[bufIdx + 1]!;
+      const b = pixelArray[bufIdx + 2]!;
+      inner.push(`\x1b[38;2;${r};${g};${b}m${char}`);
     }
     result.push(inner);
   }
