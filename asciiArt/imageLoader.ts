@@ -8,16 +8,12 @@ export async function loadAndResize(
 ) {
   await sharp(imagePath).resize(width, height, { kernel: sharp.kernel.nearest }).toFile(outputPath);
   const metadata = await sharp(outputPath).metadata();
-  const originalHeight = metadata.height!;
-  const originalWidth = metadata.width!;
   const channels = metadata.channels!;
   const { data } = await sharp(outputPath).raw().toBuffer({ resolveWithObject: true });
   const pixelArray = new Uint8Array(data.buffer);
   // return pixel array, actual width and height
   return {
     channels,
-    width: originalWidth,
-    height: originalHeight,
     pixelArray,
   };
 }

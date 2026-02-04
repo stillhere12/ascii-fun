@@ -4,7 +4,7 @@ async function main() {
 
   for (let i = 0; i < contrasts.length; i++) {
     console.log(`Contrast ${contrasts[i]}`);
-    const ascii = await buildAsciiArt('./saturn1.jpg', `./output-${i}.txt`, contrasts[i]!);
+    const ascii = await buildAsciiArt('./alexander.png', `./output-${i}.txt`, contrasts[i]!);
     console.log(ascii);
   }
 }

@@ -7,8 +7,8 @@ export async function buildAsciiArt(imagePath: string, outputPath: string, contr
   const metadata = await sharp(imagePath).metadata();
   const imageWidth = metadata.width!;
   const imageHeight = metadata.height!;
-  const terminalWidth = process.stdout.columns ?? 120;
-  const terminalHeight = process.stdout.rows ?? 40;
+  const terminalWidth = process.stdout.columns ?? 171;
+  const terminalHeight = process.stdout.rows ?? 47;
   const scaleW = terminalWidth / imageWidth;
   const scaleH = terminalHeight / imageHeight;
   const scale = Math.min(scaleW, scaleH);
@@ -32,6 +32,8 @@ export async function buildAsciiArt(imagePath: string, outputPath: string, contr
   );
   let asciiString = '';
   for (let i = 0; i < result.length; i++) {
+    console.log(result[i]?.length);
+
     asciiString += result[i]!.join('') + '\x1b[0m\n';
   }
   writeFileSync(outputPath, asciiString);
