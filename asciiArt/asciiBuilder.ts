@@ -32,7 +32,6 @@ export async function buildAsciiArt(imagePath: string, outputPath: string, contr
   );
   let asciiString = '';
   for (let i = 0; i < result.length; i++) {
-    console.log(result[i]?.length);
     const padding = Math.floor((terminalWidth - result[i]!.length) / 2);
     for (let j = 0; j < padding; j++) {
       asciiString += ' ';
