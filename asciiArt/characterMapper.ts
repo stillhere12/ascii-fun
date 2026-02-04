@@ -1,26 +1,22 @@
-function brightnessToCharacter(brightness: number[], width: number, height: number, level: number) {
-  let completePalette: string[] = [
-    '@#:. ', // level 0 - simple
-    '@%#*+=-:. ', // level 1 - medium
-    '$@B%8&WM#*oahkbdpqwm. ', // level 2 - detailed
-  ];
-
-  //   ASCII characters have different visual "density" or "weight":
-  //   - @ # M W are dark/heavy (cover more space)
-  //   - . : - ' are light (cover less space)
-  //   -   (space) is empty
-
-  //   The trick is mapping brightness to characters where:
-  //   - Dark pixels (low brightness 0-50) → dense characters like @, #, W
-  //   - Bright pixels (high brightness 200-255) → light characters like ., -,
+export function brightnessToCharacter(
+  brightness: number[],
+  width: number,
+  height: number,
+  contrast: number
+) {
+  // Master density ramp: densest → sparsest → spaces (same as well-known Python ramp)
+  const DENSITY =
+    '$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`\'.            ';
+  // Trim based on contrast (-10 to 10), mirrors Python: density[:-11+contrast]
+  const palette = DENSITY.slice(0, DENSITY.length + contrast - 11);
+  // splice original array is affected in slice orginal array remains as it is and returns new array
+  const n = palette.length;
   let result: string[][] = [];
   for (let i = 0; i < height; i++) {
     let inner: string[] = [];
     for (let j = 0; j < width; j++) {
-      let palette = completePalette[level];
-      let positioninOnedArray = i * width + j;
-      let index = Math.floor((brightness[positioninOnedArray]! / 255) * (palette!.length - 1));
-      inner.push(palette![index]!);
+      let k = Math.floor((brightness[i * width + j]! / 256) * n);
+      inner.push(palette[n - 1 - k]!);
     }
     result.push(inner);
   }
