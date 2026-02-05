@@ -3,13 +3,16 @@ import { extractFrames } from './frameExtractor';
 async function main() {
   // just implementing frameExtractor connection
   // output images will be pushed in this directory.
-  await extractFrames('./cat.gif', 'temp', 3);
-  const contrasts = [-5, 0, 10];
-
-  for (let i = 0; i < contrasts.length; i++) {
-    console.log(`Contrast ${contrasts[i]}`);
-    const ascii = await buildAsciiArt('./girl.png', `./output-${i}.txt`, contrasts[i]!);
-    console.log(ascii);
+  try {
+    const frames = await extractFrames('./cat.gif', 'temp', 3);
+    console.log(frames);
+    // now show the frames in terminal
+    for (let i = 0; i < frames.length; i++) {
+      const ascii = await buildAsciiArt(frames[i]!, `./output-${i}.txt`, 0);
+      console.log(ascii);
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 main();

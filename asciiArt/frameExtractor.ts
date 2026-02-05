@@ -1,5 +1,6 @@
 import ffmpeg from '@ts-ffmpeg/fluent-ffmpeg';
 import fs from 'node:fs';
+import path from 'node:path';
 
 export async function extractFrames(
   inputFile: string,
@@ -17,18 +18,16 @@ export async function extractFrames(
             reject(err);
           } else {
             files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-            let store = [];
-            for (let file of files) {
-              store.push(outputDir + '/' + file);
-            }
+            const frames = files.map((file) => path.join(outputDir, file));
             // ascending images
             // promise is resolving to array of strings
-            resolve(store);
+            resolve(frames);
           }
         });
       })
       .on('error', reject)
       .save(`${outputDir}/frame-%d.png`);
     console.log(`Frames extracted to ${outputDir}`);
+    // save is at end because once ffmpeg is spawned then it goes to .on('end')
   });
 }
